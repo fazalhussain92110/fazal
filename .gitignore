@@ -1,25 +1,27 @@
-# CakePHP 3
+// File: src/Controller/TasksController.php
+namespace App\Controller;
 
-/vendor/*
-/config/app.php
+use App\Controller\AppController;
 
-/tmp/cache/models/*
-!/tmp/cache/models/empty
-/tmp/cache/persistent/*
-!/tmp/cache/persistent/empty
-/tmp/cache/views/*
-!/tmp/cache/views/empty
-/tmp/sessions/*
-!/tmp/sessions/empty
-/tmp/tests/*
-!/tmp/tests/empty
+class TasksController extends AppController
+{
+    public function index()
+    {
+        $tasks = $this->Tasks->find('all');
+        $this->set(compact('tasks'));
+    }
 
-/logs/*
-!/logs/empty
-
-# CakePHP 2
-
-/app/tmp/*
-/app/Config/core.php
-/app/Config/database.php
-/vendors/*
+    public function add()
+    {
+        $task = $this->Tasks->newEmptyEntity();
+        if ($this->request->is('post')) {
+            $task = $this->Tasks->patchEntity($task, $this->request->getData());
+            if ($this->Tasks->save($task)) {
+                $this->Flash->success(__('The task has been saved.'));
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('Unable to add the task.'));
+        }
+        $this->set('task', $task);
+    }
+}
